@@ -1,0 +1,3 @@
+﻿employment_type,annual_income,credit_score,loan_purpose,loan_amount,dti,years_employed,home_ownership,delinquency_history,loan_status
+자영업,8270.0,719.0,주택,6644.0,252.0,6.0,월세,Yes,1
+무직,8019.0,339.0,사업,3847.0,470.0,26.0,전세,No,0
