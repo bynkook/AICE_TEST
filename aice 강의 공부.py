@@ -17,15 +17,15 @@ df1.merge(df2, how='inner', on=['col1','col2'])	# 다중 컬럼으로 merge
 df1.merge(df2, how='inner', left_on='이름', right_on='성명') # 좌 우 컬럼명이 다를때
 
 # 실습
-df.loc[ [1,3,5], ['col1','col3'] ] 1~5 행과 col1, col3 컬럼에 해당하는 table 을 가져옴
-df.loc[ 0:20, 'col1':'col3' ] 0~20번 인덱스의 행(총 21개), col1~col3 까지 컬럼만 출력
+df.loc[ [1,3,5], ['col1','col3'] ] 1,3,5 인덱스 행과 col1, col3 컬럼인덱스에 해당하는 테이블 출력
+df.loc[ 0:20, 'col1':'col3' ] 0~20번 인덱스의 행 (인덱스 누락이 없다면  총 21개), col1~col3 까지 컬럼만 출력
 df2 = df.copy() df2를 수정해도 df는 영향 없음(deep copy)
 
 # annual_income 최저값, 최고값 탐색 (boolean indexing)
 print(df[df.annual_income == df.annual_income.min()])
 idx_min = df[df.annual_income == df.annual_income.min()].index[0]
 또는
-idx_min = df.annual_income.idxmin()
+idx_min = df.annual_income.idxmin() # 최소값이 있는 행의 인덱스
 # 최소값 인덱스 확인해서 최소값 있는 행 삭제
 # idxmin : Return index of first occurrence of minimum over requested axis.  NA/null values are excluded.
 df = df.drop(idx_min, axis=0)
@@ -56,7 +56,9 @@ df.drop('col1', axis=1, inplace=True) 컬럼 삭제
 mean = df['col3'].mean() 평균값 계산(null 값 제외한 산술평균)
 df['col3'] = df['col3'].fillna(mean)
 
-df.reset_index(drop=True, inplace=True) 이빨빠진 기존 인덱스를 버리고 새로 생성, df 업데이트
+df.reset_index(drop=True, inplace=True) 이빨빠진 기존 인덱스를 버리고 새로 생성, 기존 인덱스는 컬럼으로 가져오지 않고 버린다.
+# reindex : 새로운 예측용 데이터를 가져왔을때, 훈련용 데이터와 컬럼갯수와 컬럼명을 일치시킨다.  fill_value = 0 으로 할 수 있다.
+new_data = new_data.reindex(columns=X_train.columns, fill_value=False)
 df.to_csv('output.csv', index=False) 인덱스를 제외한 모든 컬럼을 .csv 파일에 저장
 
 # 범주형 최빈값 찾아서 채우기
@@ -79,7 +81,15 @@ outliers = df[ (df['col'] < lower_bound) | (df['col'] > upper_bound) ]
 df = df[ (df['col'] >= lower_bound) & (df['col'] <= upper_bound) ]
 # 이상치 대치 (컬럼에 이상치 값이 있으면 중앙값으로 대치) - 이것은 시험에 꼭 나온다! 
 # .loc[row_index, column_index] 사용법 : 레이블로 인덱스를 지정한다!
-df.loc[ (df.col < lower_bound) | (df.col > upper_bound), 'col'] = df.annual_income.median()	# 이상치 대치
+df.loc[ ((df.col < lower_bound) | (df.col > upper_bound)), 'col'] = df.annual_income.median()	# 이상치 대치
+
+# 이상치 삭제(특정 컬럼 기준)
+# loan_pre = loan_pre[(loan_pre['annual_income'] >= lower_bound) & (loan_pre['annual_income'] <= upper_bound)]
+
+# 이상치 대치(특정 컬럼 기준)
+# median_income = loan_pre['annual_income'].median()
+# loan_pre.loc[loan_pre['annual_income'] < lower_bound, 'annual_income'] = median_income
+# loan_pre.loc[loan_pre['annual_income'] > upper_bound, 'annual_income'] = median_income
 
 # 구간지정해서 범주화 (Binning)
 df['level'] = pd.cut( df['col'], bins=[0, q1, q3, df['col'].max()], labels=['low', 'mid', 'high'] )		# 분할 구간 지정
@@ -88,7 +98,6 @@ df['level'] = pd.qcut( df['col'], 3, labels=['low', 'mid', 'high'] )		# 등순�
 ##### right : Indicates whether bins includes the rightmost edge or not.
 # If right == True (the default), then the bins [1, 2, 3, 4] indicate (1,2], (2,3], (3,4].
 # This argument is ignored when bins is an IntervalIndex.
-
 
 # 값 보기
 df.head()
@@ -119,4 +128,5 @@ from sklearn.model_selection import GridSearchCV
 rfc = RandonForestClassifier()
 params = {'n_estimators':[100, 150], 'max_depth':[2, 5]}
 grid_rfc = GridSearchCV(rfc,  param_grid = params)
+
 grid_rfc.fit(X_train, y_train)
