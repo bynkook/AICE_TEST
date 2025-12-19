@@ -64,10 +64,11 @@ df = df.dropna(ignore_index=True)
 df = df.dropna(axis=0)  ; how='any'(default) or 'all' 지정가능
 # 특정 컬럼들만 선택해서 결측치 제거
 df.dropna(subset=['col1', 'col2'], inplace=True)
-# 결측치 대치
-df.fillna({'col_name':df['col_name'].median()}, inplace=True)   # 결측치를 중앙값으로 대치.
+# 결측치 대치(중앙값)
+df = df.fillna({'col_name':df['col_name'].median()})
 또는
-df['col_name'].fillna(df['col_name'].mean(), inplace=True)
+df['col_name'] = df['col_name'].fillna(df['col_name'].mean())
+라고 해야 warning 이 출력되지 않는다.
 '''
 # %%
 
@@ -485,4 +486,5 @@ print("Classification Report", classification_report(y_test, y_pred)) # 모아�
 plot_training_history(history)
 
 # plot ROC curve with auc score (y_true, y_score)
+
 plot_roc_curve(y_test, y_prob_score)
