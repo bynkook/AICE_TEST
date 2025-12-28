@@ -10,9 +10,10 @@ df = df_load.loc[0:30, ['employment_type', 'annual_income', 'loan_purpose', 'hom
 df = df.dropna()
 # 주의 : .loc로 row 인덱스 슬라이싱할때 0:20 은 0~20번 인덱스까지 포함(총 21개 행)
 # 주의 : [0:20] 는 문법이 틀리므로 오류임. 리스트는 [0,1,2,3,4,...20] 이렇게 써야함
-#        즉, df_load.loc[ [0:20], ['emp...]] 는 오류임.
+#        즉, df_load.loc[ [0:20], ['emp...] ] 는 오류임.
 
 # 범주형 변수 값 종류 확인
+# .value_counts()는 고유값과 빈도수를 동시에 확인하는 좋은 방법이다.
 print(df.employment_type.unique())
 print(df.loan_purpose.unique())
 print(df.home_ownership.unique())
@@ -57,4 +58,3 @@ print(df_enc1.columns)
 print(df_enc2_fixed.columns)
 col_name_set = set(df_enc1.columns) - set(df_enc2_fixed.columns)
 print(col_name_set)
-# %%
